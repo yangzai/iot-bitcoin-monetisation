@@ -8,8 +8,7 @@ const RELAY_PIN = 'GPIO13';
 var relay;
 
 // general setup
-var env = process.env.NODE_ENV || 'development';
-var config = require('./config')[env];
+var config = require('./config')['development'];
 var fs = require('fs');
 var co = require('co');
 var _ = require('lodash');
@@ -107,7 +106,6 @@ function run() {
         value = balance - earned;
         if (value <= 0) {
             //turn off
-            console.log('close');
             if (relay) relay.close();
             return runTimeoutId = null;
         }
@@ -116,7 +114,6 @@ function run() {
         var time = value / SATOSHI_PER_SEC * 1000;
         console.log('run time:', time);
         //turn on
-        console.log('open');
         if (relay) relay.open();
         runTimeoutId = setTimeout(onCompleted, time);
     }
@@ -133,6 +130,8 @@ var collectFunds = co.wrap(function* () {
         var transactionsPromise = getAddressTransactions(address);
 
         var unspents = yield unspentsPromise;
+        console.log(`${ADDRESS_API_URL}/${address}/unspent_outputs`)
+        console.log(unspents)
         var amount = 0;
         var utxos = unspents.map(u => {
 
@@ -205,6 +204,7 @@ function generateQrcode() {
 var initPromise = co(function* () {
     var account = yield getBalance(address.toString());
     earned = balance = account.unconfirmed_balance + account.balance;
+    console.log(balance)
 });
 
 board.on('ready', function () {

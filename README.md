@@ -12,8 +12,8 @@ following their Debian instructions. For RPi v1, install the latest ARMv6 binari
 
 3. Create `config.json` file based on `config.json.sample`.
 
-4. Run `sudo node main.js` for development mode or run with environment
-`sudo NODE_ENV=production node main.js` for production mode.
+4. Run `sudo node testnet.js` for development mode or run with environment
+`sudo NODE_ENV=production node livenet.js` for production mode.
 
 5. Upon initial run `wallet.json` will be created.
 Create a backup for this file, especially if you are using real Bitcoins.
