@@ -1,0 +1,10 @@
+{
+  "development": {
+    "masterAddress": "ADDRESS-TO-RETRIEVE-FUNDS-FROM-IOT-DEVICE",
+    "toshiNetworkString": "testnet3"
+  },
+  "production": {
+    "masterAddress": "ADDRESS-TO-RETRIEVE-FUNDS-FROM-IOT-DEVICE",
+    "toshiNetworkString": "bitcoin"
+  }
+}

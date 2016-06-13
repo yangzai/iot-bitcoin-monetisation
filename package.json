@@ -1,0 +1,21 @@
+{
+  "name": "iot-bitcoin-monetisation",
+  "version": "1.0.0",
+  "description": "NUS ISS SG5233 INTERNET OF THINGS TECHNOLOGY CA",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bitcore-lib": "^0.13.16",
+    "co": "^4.6.0",
+    "johnny-five": "^0.9.56",
+    "lodash": "^4.13.1",
+    "node-fetch": "^1.5.3",
+    "qrcode-terminal": "^0.10.0",
+    "raspi-io": "^6.0.1",
+    "ws": "^1.1.0"
+  }
+}
