@@ -39,7 +39,7 @@ try {
 }
 
 var publicKey = privateKey.toPublicKey();
-var address = publicKey.toAddress(env === 'development' ? Networks.testnet : Networks.livenet);
+var address = publicKey.toAddress(Networks.testnet);
 var masterAddress = Address(config.masterAddress);
 
 // toshi api promisified
@@ -130,8 +130,6 @@ var collectFunds = co.wrap(function* () {
         var transactionsPromise = getAddressTransactions(address);
 
         var unspents = yield unspentsPromise;
-        console.log(`${ADDRESS_API_URL}/${address}/unspent_outputs`)
-        console.log(unspents)
         var amount = 0;
         var utxos = unspents.map(u => {
 
@@ -204,7 +202,6 @@ function generateQrcode() {
 var initPromise = co(function* () {
     var account = yield getBalance(address.toString());
     earned = balance = account.unconfirmed_balance + account.balance;
-    console.log(balance)
 });
 
 board.on('ready', function () {

@@ -4,7 +4,6 @@ var pushtx = blockchain.pushtx;
 var Socket = blockchain.Socket;
 var mySocket;
 
-
 // board setup
 var raspi = require('raspi-io');
 var five = require('johnny-five');
@@ -15,7 +14,6 @@ const RELAY_PIN = 'GPIO13';
 var relay;
 
 // general setup
-//var env = process.env.NODE_ENV || 'development';
 var config = require('./config')['production'];
 var fs = require('fs');
 var co = require('co');
@@ -24,19 +22,14 @@ var fetch = require('node-fetch');
 var qrcode = require('qrcode-terminal');
 
 // bitcore + toshi setup
-//const WSS_URL = `wss://${config.toshiNetworkString}.toshi.io`;
-//const HTTPS_URL = `https://${config.toshiNetworkString}.toshi.io`;
-//const ADDRESS_API_URL = `${HTTPS_URL}/api/v0/addresses`;
 const TX_FEE = 12000;
 const SATOSHI_PER_SEC = 20000; //satoshis per sec
 var earned = 0, balance = 0;
 var runTimeoutId, pingIntervalId;
 var bitcore = require('bitcore-lib');
-var Networks = bitcore.Networks;
 var Transaction = bitcore.Transaction;
 var Address = bitcore.Address;
 var PrivateKey = bitcore.PrivateKey;
-//var WebSocket = require('ws'), ws;
 
 // load wallet
 try {
@@ -46,13 +39,9 @@ try {
     writeWallet = fs.writeFile('wallet.json', JSON.stringify({wif: privateKey.toWIF()}));
 }
 
-
 var publicKey = privateKey.toPublicKey();
 var address = publicKey.toAddress();
 var masterAddress = Address(config.masterAddress);
-
-
-
 
 function run() {
     var value = 0;
@@ -77,18 +66,14 @@ function run() {
     onCompleted();
 }
 
-
-
 var collectFunds = co.wrap(function* () {
     try {
         clearTimeout(runTimeoutId);
         runTimeoutId = null;
 
         var unspentsPromise = blockexplorer.getUnspentOutputs(address);
-        //var transactionsPromise = getAddressTransactions(address);
 
         var unspents = (yield unspentsPromise).unspent_outputs;
-        console.log(unspents)
         var amount = 0;
         var utxos = unspents.map(u => {
 
@@ -103,39 +88,19 @@ var collectFunds = co.wrap(function* () {
             });
         });
 
-        //var transactions = yield transactionsPromise;
-        //var unconfirmed = transactions.unconfirmed_transactions;
-        //
-        //var ucUtxos = _.flatMap(unconfirmed, uc => {
-        //    return _.chain(uc.outputs)
-        //        .map((o, i) => { // filtering 1st will break indexing
-        //            if (o => o.addresses.every(a => a !== address.toString()))
-        //                return undefined;
-        //
-        //            console.log(uc.hash, i, o.script_hex, o.amount);
-        //            amount += o.amount;
-        //            return new Transaction.UnspentOutput({
-        //                txid: uc.hash,
-        //                vout: i,
-        //                scriptPubKey: o.script_hex,
-        //                address: address,
-        //                satoshis: o.amount
-        //            });
-        //        }).compact().value();
-        //});
+        /* TODO: collect unconfirmed tx as well
+        when better API support is provided */
 
         console.log("Unspent: ",utxos);
-        //console.log("Unconfirmed: ",ucUtxos);
 
-        if (utxos.length /*+ ucUtxos.length*/ < 1) return;
+        if (utxos.length < 1) return;
 
         var sendAmount = amount - TX_FEE;
 
         console.log("Send Amount: ", sendAmount);
 
-
         var newTx = new Transaction()
-            .from(utxos/*.concat(ucUtxos)*/)
+            .from(utxos)
             .to(masterAddress, sendAmount)
             .change(address)
             .fee(TX_FEE)
@@ -144,10 +109,9 @@ var collectFunds = co.wrap(function* () {
         var serialized = newTx.serialize();
         console.log(serialized);
 
-        //var hash = yield broadcastTransaction(serialized);
         console.log(newTx._getHash());
-        var hash = yield pushtx.pushtx(serialized);
-        console.log('sent, tx hash:', hash);
+        var message = yield pushtx.pushtx(serialized);
+        console.log('sent, tx message:', message);
 
     } catch (e) { console.error(e); }
 });
@@ -183,10 +147,14 @@ function setup() {
 
         if (!runTimeoutId && (balance - earned) > 0)
             run();
+        /* TODO: Inactivity induces websocket disconnection.
+        Until solution is provided by API,
+        address filter is not possible */
     }/*, {
         addresses: [address]
     }*/);
 }
+
 board.on('ready', function () {
     relay = new five.Relay({
         pin: RELAY_PIN,
