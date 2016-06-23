@@ -1,9 +1,3 @@
-var blockchain = require('blockchain.info');
-var blockexplorer = blockchain.blockexplorer;
-var pushtx = blockchain.pushtx;
-var Socket = blockchain.Socket;
-var mySocket;
-
 // board setup
 var raspi = require('raspi-io');
 var five = require('johnny-five');
@@ -21,7 +15,7 @@ var _ = require('lodash');
 var fetch = require('node-fetch');
 var qrcode = require('qrcode-terminal');
 
-// bitcore + toshi setup
+// bitcore + blockchain.info setup
 const TX_FEE = 12000;
 const SATOSHI_PER_SEC = 20000; //satoshis per sec
 var earned = 0, balance = 0;
@@ -30,6 +24,11 @@ var bitcore = require('bitcore-lib');
 var Transaction = bitcore.Transaction;
 var Address = bitcore.Address;
 var PrivateKey = bitcore.PrivateKey;
+var blockchain = require('blockchain.info');
+var blockexplorer = blockchain.blockexplorer;
+var pushtx = blockchain.pushtx;
+var Socket = blockchain.Socket;
+var mySocket;
 
 // load wallet
 try {
